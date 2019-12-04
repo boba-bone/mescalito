@@ -7,6 +7,12 @@ namespace Game_machine
     {
         object locker;
 
+        static int leftLane = 30, rightLane = 60;
+
+        public int LeftLane { get { return leftLane; } }
+        public int RightLane { get { return rightLane; } }
+
+
         public Road( Object Locker)
         {
             locker = Locker;
@@ -18,40 +24,38 @@ namespace Game_machine
         }
         private void RoadDrow()
         {
+            int stepDrowRoad = 3, numberOfRenderings = 15, roadLong = stepDrowRoad * numberOfRenderings;
             while (true)
             {
                 lock (locker)
-                {                   
-                    for (int c = 0; c < 3; c++)
+                {                  
+                    for (int c = 0; c < stepDrowRoad; c++)
                     {
                         Console.CursorVisible = false;
                         int top = c;
                         // Очистка старой полосы
-                        for (int j = 0; j < 45; j++)
+                        for (int j = 0; j < roadLong; j++)
                         {
                             Console.BackgroundColor = ConsoleColor.Black;
 
-                            Console.SetCursorPosition(30, j);     
+                            Console.SetCursorPosition(leftLane, j);     
                             Console.Write(" ");
 
-                            Console.SetCursorPosition(30 + 35, j); 
-                            Console.Write(" ");
-
-                            Console.SetCursorPosition(30 + 36, j);
+                            Console.SetCursorPosition(rightLane, j); 
                             Console.Write(" ");
                         }
                         // Рисование новой полосы
-                        for (int k = 0; k < 15; k++)
+                        for (int k = 0; k < numberOfRenderings; k++)
                         {
                             Console.BackgroundColor = ConsoleColor.DarkGreen;
 
-                            Console.SetCursorPosition(30, top);        
+                            Console.SetCursorPosition(leftLane, top);        
                             Console.Write(" ");
 
-                            Console.SetCursorPosition(30 + 35, top);   
+                            Console.SetCursorPosition(rightLane, top);   
                             Console.Write(" ");
 
-                            top = top + 3;
+                            top = top + stepDrowRoad;
                             Console.BackgroundColor = ConsoleColor.Black;
                         }
                         Thread.Sleep(CarMovement.SpeedThread);

@@ -8,15 +8,23 @@ namespace Game_machine
     {
         private class DrawingCar
         {
+            int widthCar, longCar;
+
+            public DrawingCar(int widthCar, int longCar)
+            {
+                this.widthCar = widthCar;
+                this.longCar = longCar;
+            }
+
             public void DrawCar(int left, int top)
             {
                 Console.SetCursorPosition(left, top);
 
                 Console.BackgroundColor = ConsoleColor.DarkRed;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < widthCar; i++)
                 {
-                    for (int j = 0; j < 6; j++)
+                    for (int j = 0; j < longCar; j++)
                     {
                         Console.Write(" ");
                     }
@@ -29,9 +37,9 @@ namespace Game_machine
             {
                 Console.SetCursorPosition(left, top);
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < widthCar; i++)
                 {
-                    for (int j = 0; j < 6; j++)
+                    for (int j = 0; j < longCar; j++)
                     {
                         Console.Write(" ");
                     }
@@ -42,11 +50,9 @@ namespace Game_machine
             }
         }
 
-        static int left = 40, top = 30, speedThread = 400, speedCar = 10  ; 
+        static int speedThread = 400, speedCar = 10  ; 
         object locker;
 
-        public int Left { get { return left; } }
-        public int Top { get { return top; } }
         public static int SpeedThread { get { return speedThread; } }
         public static int SpeedCar { get { return speedCar; } }
 
@@ -63,11 +69,16 @@ namespace Game_machine
 
         private void MoveCar()
         {
+            Road road = new Road(locker);
+
+            int left = 40, top = 30, widthCar = 5, longCar = 6, step = 1;
+            int longRoad = 45, stepThreadSpeed = 10, stepCarSpeed = 5, maxThreadSpeed = 420 ;
+
             ConsoleKeyInfo button;
             Console.CursorVisible = false;
             while(true)
             {
-                DrawingCar car = new DrawingCar();
+                DrawingCar car = new DrawingCar(widthCar, longCar);
                 button = Console.ReadKey(true);
 
                 if (button.Key == ConsoleKey.LeftArrow)
@@ -76,8 +87,8 @@ namespace Game_machine
                     {
                         car.WashCar(left, top);
 
-                        if (left-1 == 30)
-                            left = 31;
+                        if (left - step == road.LeftLane)
+                            left = road.LeftLane+step;
                         else
                             left--;
 
@@ -91,8 +102,8 @@ namespace Game_machine
                     {
                         car.WashCar(left, top);
 
-                        if (left+1 == 60)
-                            left = 59;
+                        if (left + widthCar + step == road.RightLane)
+                            left = road.RightLane - widthCar - step;
                         else
                             left++;
 
@@ -106,8 +117,8 @@ namespace Game_machine
                     {
                         car.WashCar(left, top);
 
-                        if (top-1== 0)
-                            top = 1;
+                        if (top - step == 0)
+                            top = step;
                         else
                             top--;
 
@@ -121,8 +132,8 @@ namespace Game_machine
                     {
                         car.WashCar(left, top);
 
-                        if (top+1 == 40)
-                            top = 39;
+                        if (top + longCar + step == longRoad )
+                            top = longRoad - longCar - step;
                         else
                             top++;
 
@@ -133,12 +144,12 @@ namespace Game_machine
                 {
                     lock (locker)
                     {
-                        if (speedThread - 10 == 0)
-                            speedThread = 10;
+                        if (speedThread - stepThreadSpeed == 0)
+                            speedThread = stepThreadSpeed;
                         else
                         {
-                            speedThread -= 10;
-                            speedCar += 5;
+                            speedThread -= stepThreadSpeed;
+                            speedCar += stepCarSpeed;
                         }
                     }
                 }
@@ -146,12 +157,12 @@ namespace Game_machine
                 {
                     lock (locker)
                     {
-                        if (SpeedThread + 10 == 420)
-                            speedThread = 410;
+                        if (SpeedThread + stepThreadSpeed == maxThreadSpeed)
+                            speedThread = maxThreadSpeed - stepThreadSpeed;
                         else
                         {
-                            speedThread += 10;
-                            speedCar -= 5;
+                            speedThread += stepThreadSpeed;
+                            speedCar -= stepCarSpeed;
                         }
                     }
                 }
